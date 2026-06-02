@@ -14,6 +14,7 @@ const exerciseData = [
 
 let data = loadData();
 let latestGeneratedNote = "";
+let activeExerciseCondition = "All";
 
 function loadData() {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -44,6 +45,33 @@ function setValue(id, value) {
   document.getElementById(id).value = value;
 }
 
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2600);
+}
+
+function switchView(viewId) {
+  const targetButton = document.querySelector(`.nav-button[data-view="${viewId}"]`);
+  const targetView = document.getElementById(viewId);
+
+  if (!targetButton || !targetView) {
+    return;
+  }
+
+  document.querySelectorAll(".nav-button").forEach(item => item.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+  targetButton.classList.add("active");
+  targetView.classList.add("active");
+  document.getElementById("pageTitle").textContent = targetButton.textContent.replace(/^[A-Z]{2}/, "").trim();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function getSelectedPatient(selectId) {
   const patientId = getValue(selectId);
   return data.patients.find(patient => patient.id === patientId);
@@ -57,7 +85,7 @@ function renderAll() {
   renderAppointments();
   renderProgress();
   renderBills();
-  renderExercises("All");
+  renderExercises(activeExerciseCondition);
 }
 
 function renderDashboard() {
@@ -80,8 +108,13 @@ function renderDashboard() {
 }
 
 function renderPatients() {
-  document.getElementById("patientList").innerHTML = data.patients.length
-    ? data.patients.map(patient => cardTemplate(patient.name, `${patient.id} | Age ${patient.age || "NA"} | ${patient.phone || "No phone"}`, patient.diagnosis || "No diagnosis added")).join("")
+  const query = getValue("patientSearch").toLowerCase();
+  const patients = data.patients.filter(patient => {
+    return [patient.name, patient.id, patient.diagnosis].join(" ").toLowerCase().includes(query);
+  });
+
+  document.getElementById("patientList").innerHTML = patients.length
+    ? patients.map(patient => cardTemplate(patient.name, `${patient.id} | Age ${patient.age || "NA"} | ${patient.phone || "No phone"}`, patient.diagnosis || "No diagnosis added")).join("")
     : emptyTemplate("No patients added yet.");
 }
 
@@ -156,17 +189,22 @@ function renderProgress() {
 }
 
 function renderExercises(condition) {
+  activeExerciseCondition = condition;
+  const query = getValue("exerciseSearch").toLowerCase();
   const filtered = condition === "All"
     ? exerciseData
     : exerciseData.filter(exercise => exercise.condition === condition);
+  const searched = filtered.filter(exercise => {
+    return [exercise.name, exercise.condition, exercise.details].join(" ").toLowerCase().includes(query);
+  });
 
-  document.getElementById("exerciseLibrary").innerHTML = filtered.map(exercise => `
+  document.getElementById("exerciseLibrary").innerHTML = searched.length ? searched.map(exercise => `
     <article class="exercise-card">
       <h4>${exercise.name}</h4>
       <p><strong>${exercise.condition}</strong></p>
       <p>${exercise.details}</p>
     </article>
-  `).join("");
+  `).join("") : emptyTemplate("No exercises match the current filter.");
 }
 
 function cardTemplate(title, lineOne, lineTwo) {
@@ -204,6 +242,7 @@ function addPatient() {
   ["patientId", "patientName", "patientAge", "patientPhone", "diagnosis", "medicalHistory"].forEach(id => setValue(id, ""));
   saveData();
   renderAll();
+  showToast("Patient added successfully.");
 }
 
 function addAppointment() {
@@ -224,6 +263,7 @@ function addAppointment() {
 
   saveData();
   renderAll();
+  showToast("Appointment scheduled.");
 }
 
 function addBill() {
@@ -246,6 +286,7 @@ function addBill() {
   setValue("serviceAmount", "");
   saveData();
   renderAll();
+  showToast("Bill added.");
 }
 
 function addProgressRecord() {
@@ -274,6 +315,7 @@ function addProgressRecord() {
   ["progressJoint", "activeRom", "passiveRom", "progressPainScore", "painAngle", "strengthGrade", "sessionObservation"].forEach(id => setValue(id, ""));
   saveData();
   renderAll();
+  showToast("Progress record saved.");
 }
 
 function createExercisePlan(condition, painScore) {
@@ -369,7 +411,7 @@ function saveNote() {
 
   saveData();
   renderAll();
-  alert("SOAP note saved.");
+  showToast("SOAP note saved.");
 }
 
 function downloadNote() {
@@ -459,16 +501,15 @@ function loadSampleData() {
 
   saveData();
   renderAll();
+  showToast("Sample data loaded.");
 }
 
 document.querySelectorAll(".nav-button").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".nav-button").forEach(item => item.classList.remove("active"));
-    document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
-    button.classList.add("active");
-    document.getElementById(button.dataset.view).classList.add("active");
-    document.getElementById("pageTitle").textContent = button.textContent;
-  });
+  button.addEventListener("click", () => switchView(button.dataset.view));
+});
+
+document.querySelectorAll(".action-card").forEach(button => {
+  button.addEventListener("click", () => switchView(button.dataset.go));
 });
 
 document.querySelectorAll(".chip").forEach(chip => {
@@ -479,6 +520,8 @@ document.querySelectorAll(".chip").forEach(chip => {
   });
 });
 
+document.getElementById("patientSearch").addEventListener("input", renderPatients);
+document.getElementById("exerciseSearch").addEventListener("input", () => renderExercises(activeExerciseCondition));
 document.getElementById("addPatientButton").addEventListener("click", addPatient);
 document.getElementById("addAppointmentButton").addEventListener("click", addAppointment);
 document.getElementById("addBillButton").addEventListener("click", addBill);
@@ -487,5 +530,10 @@ document.getElementById("generateNoteButton").addEventListener("click", generate
 document.getElementById("saveNoteButton").addEventListener("click", saveNote);
 document.getElementById("downloadNoteButton").addEventListener("click", downloadNote);
 document.getElementById("sampleDataButton").addEventListener("click", loadSampleData);
+document.getElementById("todayLabel").textContent = new Date().toLocaleDateString(undefined, {
+  weekday: "short",
+  month: "short",
+  day: "numeric"
+});
 
 renderAll();

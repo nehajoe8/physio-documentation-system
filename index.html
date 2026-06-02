@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-mark">PC</span>
@@ -17,14 +19,19 @@
     </div>
 
     <nav class="nav">
-      <button class="nav-button active" data-view="dashboard">Dashboard</button>
-      <button class="nav-button" data-view="patients">Patients</button>
-      <button class="nav-button" data-view="appointments">Appointments</button>
-      <button class="nav-button" data-view="documentation">AI Documentation</button>
-      <button class="nav-button" data-view="progress">Progress Tracking</button>
-      <button class="nav-button" data-view="exercises">Exercise Library</button>
-      <button class="nav-button" data-view="billing">Billing</button>
+      <button class="nav-button active" data-view="dashboard"><span>DB</span>Dashboard</button>
+      <button class="nav-button" data-view="patients"><span>PT</span>Patients</button>
+      <button class="nav-button" data-view="appointments"><span>AP</span>Appointments</button>
+      <button class="nav-button" data-view="documentation"><span>AI</span>AI Documentation</button>
+      <button class="nav-button" data-view="progress"><span>PR</span>Progress Tracking</button>
+      <button class="nav-button" data-view="exercises"><span>EX</span>Exercise Library</button>
+      <button class="nav-button" data-view="billing"><span>BL</span>Billing</button>
     </nav>
+
+    <div class="sidebar-note">
+      <strong>Prototype Mode</strong>
+      <p>Use dummy patient data for demos and reviews.</p>
+    </div>
   </aside>
 
   <main class="main">
@@ -33,32 +40,54 @@
         <p class="eyebrow">Physiotherapy management prototype</p>
         <h2 id="pageTitle">Dashboard</h2>
       </div>
-      <button class="ghost-button" id="sampleDataButton">Load Sample Data</button>
+      <div class="topbar-actions">
+        <span class="date-pill" id="todayLabel"></span>
+        <button class="ghost-button" id="sampleDataButton">Load Sample Data</button>
+      </div>
     </header>
 
     <section class="view active" id="dashboard">
       <div class="metric-grid">
-        <article class="metric">
+        <article class="metric tone-teal">
           <span>Total Patients</span>
           <strong id="patientCount">0</strong>
         </article>
-        <article class="metric">
+        <article class="metric tone-blue">
           <span>Appointments</span>
           <strong id="appointmentCount">0</strong>
         </article>
-        <article class="metric">
+        <article class="metric tone-violet">
           <span>Generated Notes</span>
           <strong id="noteCount">0</strong>
         </article>
-        <article class="metric">
+        <article class="metric tone-amber">
           <span>Pending Bills</span>
           <strong id="pendingBillCount">0</strong>
         </article>
-        <article class="metric">
+        <article class="metric tone-green">
           <span>Progress Records</span>
           <strong id="progressCount">0</strong>
         </article>
       </div>
+
+      <section class="quick-actions">
+        <button class="action-card" data-go="patients">
+          <strong>Add Patient</strong>
+          <span>Register a new clinical record</span>
+        </button>
+        <button class="action-card" data-go="appointments">
+          <strong>Book Visit</strong>
+          <span>Schedule assessment or follow-up</span>
+        </button>
+        <button class="action-card" data-go="documentation">
+          <strong>Create SOAP Note</strong>
+          <span>Generate documentation faster</span>
+        </button>
+        <button class="action-card" data-go="progress">
+          <strong>Track Progress</strong>
+          <span>Save ROM and pain observations</span>
+        </button>
+      </section>
 
       <div class="content-grid">
         <section class="panel">
@@ -104,7 +133,10 @@
         </section>
 
         <section class="panel">
-          <h3>Patient Records</h3>
+          <div class="panel-heading">
+            <h3>Patient Records</h3>
+            <input class="compact-input" id="patientSearch" placeholder="Search patients" />
+          </div>
           <div id="patientList" class="list"></div>
         </section>
       </div>
@@ -270,7 +302,10 @@
 
     <section class="view" id="exercises">
       <section class="panel">
-        <h3>Condition-Based Exercise Library</h3>
+        <div class="panel-heading">
+          <h3>Condition-Based Exercise Library</h3>
+          <input class="compact-input" id="exerciseSearch" placeholder="Search exercise" />
+        </div>
         <div class="exercise-filters">
           <button class="chip active" data-condition="All">All</button>
           <button class="chip" data-condition="Low Back Pain">Low Back Pain</button>
