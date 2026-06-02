@@ -272,6 +272,21 @@ textarea {
   line-height: 1.5;
 }
 
+.summary-box {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid #b6e0e4;
+  border-radius: 7px;
+  background: #eefbfc;
+  color: #164e55;
+  line-height: 1.5;
+}
+
+.progress-list {
+  max-height: 520px;
+  overflow: auto;
+}
+
 .exercise-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));

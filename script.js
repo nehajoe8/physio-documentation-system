@@ -26,11 +26,13 @@ function loadData() {
     patients: [],
     appointments: [],
     notes: [],
-    bills: []
+    bills: [],
+    progress: []
   };
 }
 
 function saveData() {
+  data.progress = data.progress || [];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -48,10 +50,12 @@ function getSelectedPatient(selectId) {
 }
 
 function renderAll() {
+  data.progress = data.progress || [];
   renderDashboard();
   renderPatients();
   renderPatientOptions();
   renderAppointments();
+  renderProgress();
   renderBills();
   renderExercises("All");
 }
@@ -61,6 +65,7 @@ function renderDashboard() {
   document.getElementById("appointmentCount").textContent = data.appointments.length;
   document.getElementById("noteCount").textContent = data.notes.length;
   document.getElementById("pendingBillCount").textContent = data.bills.filter(bill => bill.status === "Pending").length;
+  document.getElementById("progressCount").textContent = (data.progress || []).length;
 
   const today = new Date().toISOString().slice(0, 10);
   const todayAppointments = data.appointments.filter(appointment => appointment.date === today);
@@ -85,7 +90,7 @@ function renderPatientOptions() {
     ? data.patients.map(patient => `<option value="${patient.id}">${patient.id} - ${patient.name}</option>`).join("")
     : `<option value="">Add a patient first</option>`;
 
-  ["appointmentPatient", "docPatient", "billPatient"].forEach(id => {
+  ["appointmentPatient", "docPatient", "billPatient", "progressPatient"].forEach(id => {
     document.getElementById(id).innerHTML = options;
   });
 }
@@ -107,6 +112,47 @@ function renderBills() {
       </article>
     `).join("")
     : emptyTemplate("No billing records yet.");
+}
+
+function renderProgress() {
+  const progress = data.progress || [];
+  const summary = document.getElementById("progressSummary");
+  const list = document.getElementById("progressList");
+
+  if (!progress.length) {
+    summary.textContent = "Add session observations to compare progress over time.";
+    list.innerHTML = emptyTemplate("No progress records saved yet.");
+    return;
+  }
+
+  const groupedByPatient = progress.reduce((grouped, record) => {
+    grouped[record.patientId] = grouped[record.patientId] || [];
+    grouped[record.patientId].push(record);
+    return grouped;
+  }, {});
+
+  const latestPatientId = progress[0].patientId;
+  const patientRecords = groupedByPatient[latestPatientId].slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+  const first = patientRecords[0];
+  const latest = patientRecords[patientRecords.length - 1];
+  const painChange = Number(first.painScore || 0) - Number(latest.painScore || 0);
+  const romChange = Number(latest.activeRom || 0) - Number(first.activeRom || 0);
+
+  summary.innerHTML = `
+    <strong>${latest.patientName}</strong><br />
+    Sessions tracked: ${patientRecords.length}<br />
+    Pain change: ${painChange > 0 ? "-" + painChange : painChange} points<br />
+    Active ROM change: ${romChange >= 0 ? "+" + romChange : romChange} degrees
+  `;
+
+  list.innerHTML = progress.map(record => `
+    <article class="list-card">
+      <strong>${record.patientName} - ${record.joint || "Region not specified"}</strong>
+      <p>${record.date} | Pain ${record.painScore || "NA"}/10 | Active ROM ${record.activeRom || "NA"} | Passive ROM ${record.passiveRom || "NA"}</p>
+      <p>Pain starts at: ${record.painAngle || "NA"} degrees | Strength: ${record.strengthGrade || "NA"} | Movement: ${record.movementQuality}</p>
+      <p>${record.observation || "No observation added."}</p>
+    </article>
+  `).join("");
 }
 
 function renderExercises(condition) {
@@ -198,6 +244,34 @@ function addBill() {
 
   setValue("serviceName", "");
   setValue("serviceAmount", "");
+  saveData();
+  renderAll();
+}
+
+function addProgressRecord() {
+  const patient = getSelectedPatient("progressPatient");
+
+  if (!patient) {
+    alert("Please add a patient first.");
+    return;
+  }
+
+  data.progress = data.progress || [];
+  data.progress.unshift({
+    patientId: patient.id,
+    patientName: patient.name,
+    date: getValue("progressDate") || new Date().toISOString().slice(0, 10),
+    joint: getValue("progressJoint"),
+    activeRom: getValue("activeRom"),
+    passiveRom: getValue("passiveRom"),
+    painScore: getValue("progressPainScore"),
+    painAngle: getValue("painAngle"),
+    strengthGrade: getValue("strengthGrade"),
+    movementQuality: getValue("movementQuality"),
+    observation: getValue("sessionObservation")
+  });
+
+  ["progressJoint", "activeRom", "passiveRom", "progressPainScore", "painAngle", "strengthGrade", "sessionObservation"].forEach(id => setValue(id, ""));
   saveData();
   renderAll();
 }
@@ -344,6 +418,34 @@ function loadSampleData() {
       }
     ],
     notes: [],
+    progress: [
+      {
+        patientId: "PT-001",
+        patientName: "Sample Patient A",
+        date: "2026-06-02",
+        joint: "Lumbar spine",
+        activeRom: "45",
+        passiveRom: "55",
+        painScore: "8",
+        painAngle: "40",
+        strengthGrade: "3/5",
+        movementQuality: "Guarded",
+        observation: "Pain and guarding noted during forward bending."
+      },
+      {
+        patientId: "PT-001",
+        patientName: "Sample Patient A",
+        date: "2026-06-16",
+        joint: "Lumbar spine",
+        activeRom: "65",
+        passiveRom: "72",
+        painScore: "5",
+        painAngle: "60",
+        strengthGrade: "4/5",
+        movementQuality: "Compensated",
+        observation: "Improved bending tolerance with mild compensation."
+      }
+    ],
     bills: [
       {
         patientId: "PT-001",
@@ -380,6 +482,7 @@ document.querySelectorAll(".chip").forEach(chip => {
 document.getElementById("addPatientButton").addEventListener("click", addPatient);
 document.getElementById("addAppointmentButton").addEventListener("click", addAppointment);
 document.getElementById("addBillButton").addEventListener("click", addBill);
+document.getElementById("addProgressButton").addEventListener("click", addProgressRecord);
 document.getElementById("generateNoteButton").addEventListener("click", generateNote);
 document.getElementById("saveNoteButton").addEventListener("click", saveNote);
 document.getElementById("downloadNoteButton").addEventListener("click", downloadNote);

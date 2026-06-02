@@ -21,6 +21,7 @@
       <button class="nav-button" data-view="patients">Patients</button>
       <button class="nav-button" data-view="appointments">Appointments</button>
       <button class="nav-button" data-view="documentation">AI Documentation</button>
+      <button class="nav-button" data-view="progress">Progress Tracking</button>
       <button class="nav-button" data-view="exercises">Exercise Library</button>
       <button class="nav-button" data-view="billing">Billing</button>
     </nav>
@@ -52,6 +53,10 @@
         <article class="metric">
           <span>Pending Bills</span>
           <strong id="pendingBillCount">0</strong>
+        </article>
+        <article class="metric">
+          <span>Progress Records</span>
+          <strong id="progressCount">0</strong>
         </article>
       </div>
 
@@ -181,6 +186,84 @@
         <section class="panel">
           <h3>Generated SOAP Note</h3>
           <div id="noteOutput" class="report-output">Select a patient, enter assessment details, and generate a note.</div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="progress">
+      <div class="content-grid">
+        <section class="panel">
+          <h3>Structured Session Observation</h3>
+          <label for="progressPatient">Patient</label>
+          <select id="progressPatient"></select>
+
+          <div class="form-row">
+            <div>
+              <label for="progressDate">Session Date</label>
+              <input id="progressDate" type="date" />
+            </div>
+            <div>
+              <label for="progressJoint">Joint / Region</label>
+              <input id="progressJoint" placeholder="Right knee, left shoulder, lumbar spine" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="activeRom">Active ROM</label>
+              <input id="activeRom" type="number" placeholder="108" />
+            </div>
+            <div>
+              <label for="passiveRom">Passive ROM</label>
+              <input id="passiveRom" type="number" placeholder="114" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="progressPainScore">Pain Score /10</label>
+              <input id="progressPainScore" type="number" min="0" max="10" placeholder="6" />
+            </div>
+            <div>
+              <label for="painAngle">Pain Starts At</label>
+              <input id="painAngle" type="number" placeholder="90" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="strengthGrade">Strength Grade</label>
+              <select id="strengthGrade">
+                <option value="">Select</option>
+                <option>1/5</option>
+                <option>2/5</option>
+                <option>3/5</option>
+                <option>4/5</option>
+                <option>5/5</option>
+              </select>
+            </div>
+            <div>
+              <label for="movementQuality">Movement Quality</label>
+              <select id="movementQuality">
+                <option>Normal</option>
+                <option>Guarded</option>
+                <option>Compensated</option>
+                <option>Hesitant</option>
+                <option>Painful</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="sessionObservation">Session Observation</label>
+          <textarea id="sessionObservation" placeholder="Difficulty during stretch, pain behavior, balance issue, gait change, hesitation, or compensation"></textarea>
+
+          <button class="primary" id="addProgressButton">Save Progress Record</button>
+        </section>
+
+        <section class="panel">
+          <h3>Longitudinal Progress</h3>
+          <div id="progressSummary" class="summary-box">Add session observations to compare progress over time.</div>
+          <div id="progressList" class="list progress-list"></div>
         </section>
       </div>
     </section>
