@@ -3,104 +3,233 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Physiotherapy Documentation System</title>
+  <title>PhysioCare AI Clinic System</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="app-header">
-    <div>
-      <h1>AI-Powered Physiotherapy Documentation System</h1>
-      <p>Generate structured SOAP notes, treatment plans, and exercise suggestions from clinical assessment details.</p>
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">PC</span>
+      <div>
+        <h1>PhysioCare AI</h1>
+        <p>Clinic workflow system</p>
+      </div>
     </div>
-  </header>
 
-  <main class="app-layout">
-    <section class="panel">
-      <h2>Patient and Assessment Details</h2>
+    <nav class="nav">
+      <button class="nav-button active" data-view="dashboard">Dashboard</button>
+      <button class="nav-button" data-view="patients">Patients</button>
+      <button class="nav-button" data-view="appointments">Appointments</button>
+      <button class="nav-button" data-view="documentation">AI Documentation</button>
+      <button class="nav-button" data-view="exercises">Exercise Library</button>
+      <button class="nav-button" data-view="billing">Billing</button>
+    </nav>
+  </aside>
 
-      <div class="form-row">
-        <div>
-          <label for="patientName">Patient Name or ID</label>
-          <input id="patientName" placeholder="Example: PT-001" />
-        </div>
-        <div>
-          <label for="age">Age</label>
-          <input id="age" type="number" placeholder="Example: 45" />
-        </div>
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Physiotherapy management prototype</p>
+        <h2 id="pageTitle">Dashboard</h2>
+      </div>
+      <button class="ghost-button" id="sampleDataButton">Load Sample Data</button>
+    </header>
+
+    <section class="view active" id="dashboard">
+      <div class="metric-grid">
+        <article class="metric">
+          <span>Total Patients</span>
+          <strong id="patientCount">0</strong>
+        </article>
+        <article class="metric">
+          <span>Appointments</span>
+          <strong id="appointmentCount">0</strong>
+        </article>
+        <article class="metric">
+          <span>Generated Notes</span>
+          <strong id="noteCount">0</strong>
+        </article>
+        <article class="metric">
+          <span>Pending Bills</span>
+          <strong id="pendingBillCount">0</strong>
+        </article>
       </div>
 
-      <div class="form-row">
-        <div>
-          <label for="gender">Gender</label>
-          <select id="gender">
-            <option value="">Select</option>
-            <option>Female</option>
-            <option>Male</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div>
-          <label for="condition">Primary Condition</label>
-          <select id="condition">
-            <option value="">Select</option>
-            <option>Low Back Pain</option>
-            <option>Neck Pain</option>
-            <option>Knee Pain</option>
-            <option>Shoulder Pain</option>
-            <option>Posture-related Pain</option>
-            <option>Sports Injury</option>
-            <option>Post-operative Rehabilitation</option>
-            <option>Neurological Rehabilitation</option>
-          </select>
-        </div>
-      </div>
-
-      <label for="chiefComplaint">Chief Complaint</label>
-      <textarea id="chiefComplaint" placeholder="Example: Patient reports pain while bending and sitting for long hours."></textarea>
-
-      <div class="form-row">
-        <div>
-          <label for="painScore">Pain Score /10</label>
-          <input id="painScore" type="number" min="0" max="10" placeholder="Example: 6" />
-        </div>
-        <div>
-          <label for="duration">Duration of Symptoms</label>
-          <input id="duration" placeholder="Example: 2 weeks" />
-        </div>
-      </div>
-
-      <label for="objectiveFindings">Objective Findings</label>
-      <textarea id="objectiveFindings" placeholder="Example: Reduced lumbar flexion, tenderness over paraspinal muscles, weak core activation."></textarea>
-
-      <label for="functionalLimitations">Functional Limitations</label>
-      <textarea id="functionalLimitations" placeholder="Example: Difficulty climbing stairs, prolonged sitting, lifting objects, walking long distances."></textarea>
-
-      <label for="treatmentGiven">Treatment Given Today</label>
-      <textarea id="treatmentGiven" placeholder="Example: Hot pack, stretching, strengthening exercises, manual therapy, posture education."></textarea>
-
-      <label for="goals">Treatment Goals</label>
-      <textarea id="goals" placeholder="Example: Reduce pain, improve mobility, restore function, prevent recurrence."></textarea>
-
-      <div class="button-row">
-        <button class="primary" id="generateButton">Generate SOAP Note</button>
-        <button class="secondary" id="saveButton">Save Session</button>
-        <button class="secondary" id="downloadButton">Download Report</button>
-        <button class="danger" id="clearButton">Clear Form</button>
+      <div class="content-grid">
+        <section class="panel">
+          <h3>Today's Clinic Queue</h3>
+          <div id="todayAppointments" class="list"></div>
+        </section>
+        <section class="panel">
+          <h3>Recent Documentation</h3>
+          <div id="recentNotes" class="list"></div>
+        </section>
       </div>
     </section>
 
-    <section class="panel">
-      <h2>Generated Documentation</h2>
-      <div id="output" class="report-output">Fill the assessment form and click "Generate SOAP Note".</div>
+    <section class="view" id="patients">
+      <div class="content-grid">
+        <section class="panel">
+          <h3>Register Patient</h3>
+          <div class="form-row">
+            <div>
+              <label for="patientId">Patient ID</label>
+              <input id="patientId" placeholder="PT-001" />
+            </div>
+            <div>
+              <label for="patientName">Name</label>
+              <input id="patientName" placeholder="Patient name" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="patientAge">Age</label>
+              <input id="patientAge" type="number" placeholder="35" />
+            </div>
+            <div>
+              <label for="patientPhone">Phone</label>
+              <input id="patientPhone" placeholder="Dummy number only" />
+            </div>
+          </div>
+          <label for="diagnosis">Condition / Diagnosis</label>
+          <input id="diagnosis" placeholder="Low Back Pain" />
+          <label for="medicalHistory">Medical History</label>
+          <textarea id="medicalHistory" placeholder="Relevant history, precautions, allergies, previous treatment"></textarea>
+          <button class="primary" id="addPatientButton">Add Patient</button>
+        </section>
 
-      <h2 class="saved-heading">Saved Sessions</h2>
-      <div id="savedSessions"></div>
+        <section class="panel">
+          <h3>Patient Records</h3>
+          <div id="patientList" class="list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="appointments">
+      <div class="content-grid">
+        <section class="panel">
+          <h3>Schedule Appointment</h3>
+          <label for="appointmentPatient">Patient</label>
+          <select id="appointmentPatient"></select>
+          <div class="form-row">
+            <div>
+              <label for="appointmentDate">Date</label>
+              <input id="appointmentDate" type="date" />
+            </div>
+            <div>
+              <label for="appointmentTime">Time</label>
+              <input id="appointmentTime" type="time" />
+            </div>
+          </div>
+          <label for="appointmentType">Visit Type</label>
+          <select id="appointmentType">
+            <option>Initial Assessment</option>
+            <option>Follow-up</option>
+            <option>Exercise Review</option>
+            <option>Discharge Review</option>
+          </select>
+          <button class="primary" id="addAppointmentButton">Add Appointment</button>
+        </section>
+
+        <section class="panel">
+          <h3>Appointment Schedule</h3>
+          <div id="appointmentList" class="list"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="documentation">
+      <div class="content-grid documentation-grid">
+        <section class="panel">
+          <h3>Clinical Assessment</h3>
+          <label for="docPatient">Patient</label>
+          <select id="docPatient"></select>
+
+          <div class="form-row">
+            <div>
+              <label for="painScore">Pain Score /10</label>
+              <input id="painScore" type="number" min="0" max="10" placeholder="6" />
+            </div>
+            <div>
+              <label for="symptomDuration">Duration</label>
+              <input id="symptomDuration" placeholder="2 weeks" />
+            </div>
+          </div>
+
+          <label for="chiefComplaint">Chief Complaint</label>
+          <textarea id="chiefComplaint" placeholder="Pain while bending, walking, lifting, or sitting for long hours"></textarea>
+
+          <label for="objectiveFindings">Objective Findings</label>
+          <textarea id="objectiveFindings" placeholder="ROM, strength, tenderness, posture, gait, special tests"></textarea>
+
+          <label for="functionalLimitations">Functional Limitations</label>
+          <textarea id="functionalLimitations" placeholder="Stairs, squatting, sitting, standing, walking, work activity"></textarea>
+
+          <label for="treatmentGiven">Treatment Given</label>
+          <textarea id="treatmentGiven" placeholder="Manual therapy, exercise therapy, electrotherapy, education"></textarea>
+
+          <label for="treatmentGoals">Treatment Goals</label>
+          <textarea id="treatmentGoals" placeholder="Reduce pain, improve mobility, restore function, prevent recurrence"></textarea>
+
+          <div class="button-row">
+            <button class="primary" id="generateNoteButton">Generate SOAP Note</button>
+            <button class="secondary" id="saveNoteButton">Save Note</button>
+            <button class="secondary" id="downloadNoteButton">Download</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Generated SOAP Note</h3>
+          <div id="noteOutput" class="report-output">Select a patient, enter assessment details, and generate a note.</div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="exercises">
+      <section class="panel">
+        <h3>Condition-Based Exercise Library</h3>
+        <div class="exercise-filters">
+          <button class="chip active" data-condition="All">All</button>
+          <button class="chip" data-condition="Low Back Pain">Low Back Pain</button>
+          <button class="chip" data-condition="Neck Pain">Neck Pain</button>
+          <button class="chip" data-condition="Knee Pain">Knee Pain</button>
+          <button class="chip" data-condition="Shoulder Pain">Shoulder Pain</button>
+        </div>
+        <div id="exerciseLibrary" class="exercise-grid"></div>
+      </section>
+    </section>
+
+    <section class="view" id="billing">
+      <div class="content-grid">
+        <section class="panel">
+          <h3>Create Bill</h3>
+          <label for="billPatient">Patient</label>
+          <select id="billPatient"></select>
+          <div class="form-row">
+            <div>
+              <label for="serviceName">Service</label>
+              <input id="serviceName" placeholder="Physiotherapy session" />
+            </div>
+            <div>
+              <label for="serviceAmount">Amount</label>
+              <input id="serviceAmount" type="number" placeholder="500" />
+            </div>
+          </div>
+          <label for="paymentStatus">Payment Status</label>
+          <select id="paymentStatus">
+            <option>Pending</option>
+            <option>Paid</option>
+          </select>
+          <button class="primary" id="addBillButton">Add Bill</button>
+        </section>
+
+        <section class="panel">
+          <h3>Billing Records</h3>
+          <div id="billList" class="list"></div>
+        </section>
+      </div>
     </section>
   </main>
-
-  <footer class="app-footer">
-    Project safety note: This prototype is for academic use. Use dummy or anonymized patient data only.
-  </footer>
 
   <script src="script.js"></script>
 </body>
