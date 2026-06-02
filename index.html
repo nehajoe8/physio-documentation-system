@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Physiotherapy Documentation System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>AI-Powered Physiotherapy Documentation System</h1>
+      <p>Generate structured SOAP notes, treatment plans, and exercise suggestions from clinical assessment details.</p>
+    </div>
+  </header>
+
+  <main class="app-layout">
+    <section class="panel">
+      <h2>Patient and Assessment Details</h2>
+
+      <div class="form-row">
+        <div>
+          <label for="patientName">Patient Name or ID</label>
+          <input id="patientName" placeholder="Example: PT-001" />
+        </div>
+        <div>
+          <label for="age">Age</label>
+          <input id="age" type="number" placeholder="Example: 45" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for="gender">Gender</label>
+          <select id="gender">
+            <option value="">Select</option>
+            <option>Female</option>
+            <option>Male</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="condition">Primary Condition</label>
+          <select id="condition">
+            <option value="">Select</option>
+            <option>Low Back Pain</option>
+            <option>Neck Pain</option>
+            <option>Knee Pain</option>
+            <option>Shoulder Pain</option>
+            <option>Posture-related Pain</option>
+            <option>Sports Injury</option>
+            <option>Post-operative Rehabilitation</option>
+            <option>Neurological Rehabilitation</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="chiefComplaint">Chief Complaint</label>
+      <textarea id="chiefComplaint" placeholder="Example: Patient reports pain while bending and sitting for long hours."></textarea>
+
+      <div class="form-row">
+        <div>
+          <label for="painScore">Pain Score /10</label>
+          <input id="painScore" type="number" min="0" max="10" placeholder="Example: 6" />
+        </div>
+        <div>
+          <label for="duration">Duration of Symptoms</label>
+          <input id="duration" placeholder="Example: 2 weeks" />
+        </div>
+      </div>
+
+      <label for="objectiveFindings">Objective Findings</label>
+      <textarea id="objectiveFindings" placeholder="Example: Reduced lumbar flexion, tenderness over paraspinal muscles, weak core activation."></textarea>
+
+      <label for="functionalLimitations">Functional Limitations</label>
+      <textarea id="functionalLimitations" placeholder="Example: Difficulty climbing stairs, prolonged sitting, lifting objects, walking long distances."></textarea>
+
+      <label for="treatmentGiven">Treatment Given Today</label>
+      <textarea id="treatmentGiven" placeholder="Example: Hot pack, stretching, strengthening exercises, manual therapy, posture education."></textarea>
+
+      <label for="goals">Treatment Goals</label>
+      <textarea id="goals" placeholder="Example: Reduce pain, improve mobility, restore function, prevent recurrence."></textarea>
+
+      <div class="button-row">
+        <button class="primary" id="generateButton">Generate SOAP Note</button>
+        <button class="secondary" id="saveButton">Save Session</button>
+        <button class="secondary" id="downloadButton">Download Report</button>
+        <button class="danger" id="clearButton">Clear Form</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Generated Documentation</h2>
+      <div id="output" class="report-output">Fill the assessment form and click "Generate SOAP Note".</div>
+
+      <h2 class="saved-heading">Saved Sessions</h2>
+      <div id="savedSessions"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    Project safety note: This prototype is for academic use. Use dummy or anonymized patient data only.
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
